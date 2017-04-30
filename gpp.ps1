@@ -26,7 +26,8 @@ function Checkout-Branch {
     Param()
 
     DynamicParam {
-        # Get branch names
+        # Retrieve local branch names
+        # TODO retrieve remotes or all based on optional flag param?
         $names = Get-Branch | % { $_.Name }
 
         # Define -Name parameter
@@ -35,10 +36,7 @@ function Checkout-Branch {
         $nameAtts.Mandatory = $true
         $nameAtts.Position = 1
         $nameValidation = New-Object System.Management.Automation.ValidateSetAttribute($names)
-        $nameAttCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-        $nameAttCollection.Add($nameAtts)
-        $nameAttCollection.Add($nameValidation)
-        $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Name', [String], $nameAttCollection)
+        $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Name', [String], @($nameAtts, $nameValidation))
 
         # dynamic parameters to return
         $dynamicParams = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
