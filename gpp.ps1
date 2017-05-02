@@ -14,21 +14,29 @@
 
 # TODO must include relative name part e.g. dev/branchName
 function Get-Branch {
-    $headsPath = (Get-GitFolder).FullName + "\refs\heads"
-    if (Test-Path $headsPath) {
-        Get-ChildItem -Path $headsPath -Recurse -File |
-            % { @{Name = $_.Name; Ref = Get-Content -Path $_.FullName} }
+    Param(
+        [switch]
+        $Remote
+    )
+
+    $branchesPath = (Get-GitFolder).FullName + "\refs\" + $(if ($remote) { "remotes\" } else { "heads\" })
+
+    if (Test-Path $branchesPath) {
+        Get-ChildItem -Path $branchesPath -Recurse -File |
+            % { @{Name = $_.Name; Target = Get-Content -Path $_.FullName} }
     }
 }
 
 function Checkout-Branch {
     [CmdletBinding()]
-    Param()
+    Param(
+        [switch] $Remote
+    )
 
     DynamicParam {
         # Retrieve local branch names
         # TODO retrieve remotes or all based on optional flag param?
-        $names = Get-Branch | % { $_.Name }
+        $names = Get-Branch -Remote:$Remote | % { $_.Name }
 
         # Define -Name parameter
         $nameAtts = New-Object System.Management.Automation.ParameterAttribute
