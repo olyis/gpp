@@ -12,7 +12,6 @@
     }
 }
 
-# TODO must include relative name part e.g. dev/branchName
 function Get-Branch {
     Param(
         [switch]
@@ -21,9 +20,21 @@ function Get-Branch {
 
     $branchesPath = (Get-GitFolder).FullName + "\refs\" + $(if ($remote) { "remotes\" } else { "heads\" })
 
+    function cutPrefix([string] $prefix, [string] $target) {
+        $index = $target.IndexOf($prefix)
+        if ($index -gt -1) {
+            return $target.Substring($index + $prefix.Length)
+        } else {
+            return $target
+        }
+    }
+
     if (Test-Path $branchesPath) {
         Get-ChildItem -Path $branchesPath -Recurse -File |
-            % { @{Name = $_.Name; Target = Get-Content -Path $_.FullName} }
+            % {@{
+                    Name = cutPrefix -prefix $branchesPath -target $_.FullName
+                    Target = Get-Content -Path $_.FullName
+                }}
     }
 }
 
