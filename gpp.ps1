@@ -1,4 +1,8 @@
 ﻿function Get-GitFolder {
+    Param(
+        [switch]
+        $Throw
+    )
     $currentDir = Get-Item -Path '.' -Force
     while ($true) {
         $putativePath = $currentDir.FullName + "\.git"
@@ -6,7 +10,11 @@
             return Get-Item -Path $putativePath -Force
         }
         if ($currentDir.Parent -eq $null) {
-            throw "No .git folder found"
+            if ($Throw) {
+                throw "No .git folder found"
+            } else {
+                return
+            }
         }
         $currentDir = $currentDir.Parent
     }
@@ -18,7 +26,7 @@ function Get-Branch {
         $Remote
     )
 
-    $branchesPath = (Get-GitFolder).FullName + "\refs\" + $(if ($remote) { "remotes\" } else { "heads\" })
+    $branchesPath = (Get-GitFolder -Throw).FullName + "\refs\" + $(if ($remote) { "remotes\" } else { "heads\" })
 
     function cutPrefix([string] $prefix, [string] $target) {
         $index = $target.IndexOf($prefix)
