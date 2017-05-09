@@ -13,10 +13,10 @@ In this current draft implementation, gpp is a single powershell script which yo
 
 After this, you get fun features like branch name autocomplete
 
-    > Get-Branch -Name _
-                       master
-                       dev/my-feature-branch
-                       ...
+    > Checkout-Branch -Name _
+                            master
+                            dev/my-feature-branch
+                            ...
 
 You get even better support if you use the powershell ISE.
 
