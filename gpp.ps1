@@ -49,7 +49,6 @@ function Get-Branch {
 function Checkout-Branch {
     [CmdletBinding()]
     Param(
-        [Parameter(position=1)]
         [switch] $Remote
     )
 
